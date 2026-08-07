@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<!-- Meta tag fondamentali per Mobile: blocco zoom, supporto fullscreen -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Hotel PDC</title>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#f5f5f7">
+
+<!-- Tipografia di Sistema (Stile Apple) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- PDF.js via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+  :root {
+    --bg-system: #f5f5f7;
+    --card-bg: rgba(255, 255, 255, 0.72);
+    --card-border: rgba(255, 255, 255, 0.8);
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --accent-disabled: #a1c6ea;
+    --green-apple: #34c759;
+    --red-apple: #ff3b30;
+    --separator: rgba(60, 60, 67, 0.12);
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-system: #000000;
+      --card-bg: rgba(28, 28, 30, 0.75);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text-primary: #f5f5f7;
+      --text-secondary: #86868b;
+      --accent: #2997ff;
+      --accent-hover: #3ca0ff;
+      --accent-disabled: #1d4066;
+      --green-apple: #30d158;
+      --red-apple: #ff453a;
+      --separator: rgba(84, 84, 88, 0.35);
+      --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  * { 
+    box-sizing: border-box; 
+    -webkit-font-smoothing: antialiased; 
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent; 
+  }
+
+  html, body {
+    margin: 0; padding: 0;
+    background-color: var(--bg-system);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh; display: flex; justify-content: center;
+    overscroll-behavior-y: none;
+  }
+
+  .wrap { 
+    width: 100%; max-width: 580px; 
+    padding: calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 30px); 
+  }
+
+  /* --- HEADER --- */
+  header.top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 0 4px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, #0071e3, #42a5f5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3); flex-shrink: 0;
+  }
+  .brand h1 { font-size: 20px; margin: 0; font-weight: 600; letter-spacing: -0.4px; }
+  .brand .sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* --- CARD CONTENITORE --- */
+  .sheet {
+    background: var(--card-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border-radius: 24px; border: 1px solid var(--card-border);
+    box-shadow: var(--shadow-soft); overflow: hidden;
+  }
+
+  .sheet-head {
+    padding: 16px 20px; border-bottom: 1px solid var(--separator);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sheet-head .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-secondary); }
+  
+  .meta-container {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .meta-container .meta { font-size: 12px; color: var(--text-primary); font-weight: 500; }
+  
+  /* PALLINO DI STATO (Spostato nella card) */
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green-apple); box-shadow: 0 0 8px var(--green-apple);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  .dot.loading { background: #ff9f0a; box-shadow: 0 0 8px #ff9f0a; animation: pulse 1s infinite alternate; }
+  @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
+
+  form { padding: 20px; }
+  .row { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .field { display: flex; flex-direction: column; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; margin-left: 2px; }
+  
+  .field input {
+    width: 100%; height: 50px; padding: 0 16px; border: 1px solid var(--separator);
+    border-radius: 14px; background: rgba(255, 255, 255, 0.5); font-family: inherit; font-size: 16px;
+    color: var(--text-primary); outline: none; transition: all 0.2s ease;
+  }
+  @media (prefers-color-scheme: dark) { .field input { background: rgba(0, 0, 0, 0.2); } }
+  
+  .field input[type=text] { font-family: 'JetBrains Mono', monospace, sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+  .field input:focus:not(:disabled) { border-color: var(--accent); background: rgba(255, 255, 255, 0.9); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15); }
+  @media (prefers-color-scheme: dark) { .field input:focus:not(:disabled) { background: rgba(0, 0, 0, 0.5); } }
+  .field input:disabled { opacity: 0.6; cursor: not-allowed; background: rgba(0,0,0,0.05); }
+  .field.required label::after { content: " *"; color: var(--red-apple); }
+
+  .actions { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+  
+  button {
+    width: 100%; height: 52px; font-family: inherit; font-size: 17px; font-weight: 600; letter-spacing: -0.2px;
+    border: none; border-radius: 14px; padding: 0 20px; cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-primary { background: var(--accent); color: #ffffff; box-shadow: 0 4px 14px rgba(0, 113, 227, 0.3); }
+  .btn-primary:active:not(:disabled) { transform: scale(0.97); background: var(--accent-hover); }
+  .btn-primary:disabled { background: var(--accent-disabled); box-shadow: none; cursor: not-allowed; opacity: 0.8; }
+
+  /* --- RISULTATI --- */
+  .result { background: rgba(255, 255, 255, 0.85); border-top: 1px solid var(--separator); padding: 24px 20px; display: none; animation: fadeIn 0.3s ease; }
+  @media (prefers-color-scheme: dark) { .result { background: rgba(40, 40, 42, 0.85); } }
+  .result.show { display: block; }
+  .result-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--green-apple); margin-bottom: 6px; }
+  .result .idpos { font-size: 44px; font-weight: 700; color: var(--text-primary); letter-spacing: -1.5px; font-family: 'JetBrains Mono', monospace; margin-bottom: 24px; }
+  
+  .result .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: rgba(0,0,0,0.03); padding: 16px; border-radius: 14px; }
+  @media (prefers-color-scheme: dark) { .result .grid { background: rgba(255, 255, 255, 0.04); } }
+  .result .grid div { display: flex; flex-direction: column; }
+  .result .grid span { color: var(--text-secondary); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .result .grid b { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+
+  /* --- ERRORI / NESSUN RISULTATO --- */
+  .alert-box {
+    margin: 0 20px 20px; border-radius: 14px; padding: 16px;
+    font-size: 14px; font-weight: 500; display: none; text-align: center; animation: fadeIn 0.3s ease; line-height: 1.4;
+  }
+  .alert-box.show { display: block; }
+  .alert-box.error { background: rgba(255, 59, 48, 0.08); border: 1px solid rgba(255, 59, 48, 0.2); color: var(--red-apple); }
+  .alert-box.warning { background: rgba(255, 159, 10, 0.08); border: 1px solid rgba(255, 159, 10, 0.2); color: #d07d00; }
+  @media (prefers-color-scheme: dark) { .alert-box.warning { color: #ff9f0a; } }
+
+  /* --- FOOTER --- */
+  footer.foot { margin-top: 24px; text-align: center; font-size: 12px; color: var(--text-secondary); font-weight: 400; }
+  footer.foot code { font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; color: var(--text-primary); }
+  @media (prefers-color-scheme: dark) { footer.foot code { background: rgba(255,255,255,0.1); } }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">POS</div>
+      <div>
+        <h1>Hotel PDC</h1>
+        <div class="sub">Ricerca su database</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="label">Registro prenotazioni</div>
+      <div class="meta-container">
+        <span class="dot loading" id="statusDot"></span>
+        <span class="meta" id="status" aria-live="polite">Analisi in corso...</span>
+      </div>
+    </div>
+
+    <form id="searchForm" autocomplete="off">
+      <div class="row">
+        <div class="field required">
+          <label for="trainInput">N. Treno</label>
+          <input id="trainInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Es. 3629" disabled>
+        </div>
+        <div class="field required">
+          <label for="dateInput">Data</label>
+          <input id="dateInput" type="date" disabled>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary" id="searchBtn" disabled>Cerca ID POS</button>
+      </div>
+    </form>
+
+    <div class="alert-box error" id="alertBox" aria-live="assertive"></div>
+
+    <div class="result" id="resultCard" aria-live="polite">
+      <div class="result-header">ID POS Trovato</div>
+      <div class="idpos" id="idposValue">—</div>
+      <div class="grid">
+        <div><span>Data</span><b id="rDate">—</b></div>
+        <div><span>Hotel</span><b id="rHotel">—</b></div>
+        <div><span>Treno</span><b id="rTreno">—</b></div>
+        <div><span>Ora in</span><b id="rIn">—</b></div>
+        <div><span>Ora out</span><b id="rOut">—</b></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">File in uso: <code id="pdfName">—</code></footer>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const CONFIG = {
+    PDF_FILENAME: "HOTEL_PDC.pdf",
+    WORKER_SRC: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"
+  };
+
+  class POSApp {
+    constructor() {
+      this.records = [];
+      this.isReady = false;
+      
+      this.dom = {
+        statusDot: document.getElementById('statusDot'),
+        statusText: document.getElementById('status'),
+        form: document.getElementById('searchForm'),
+        trainInput: document.getElementById('trainInput'),
+        dateInput: document.getElementById('dateInput'),
+        searchBtn: document.getElementById('searchBtn'),
+        alertBox: document.getElementById('alertBox'),
+        resultCard: document.getElementById('resultCard'),
+        pdfName: document.getElementById('pdfName'),
+        valIdPos: document.getElementById('idposValue'),
+        valDate: document.getElementById('rDate'),
+        valHotel: document.getElementById('rHotel'),
+        valTreno: document.getElementById('rTreno'),
+        valIn: document.getElementById('rIn'),
+        valOut: document.getElementById('rOut')
+      };
+
+      this.init();
+    }
+
+    init() {
+      this.dom.dateInput.value = this.getTodayISO();
+      this.dom.pdfName.textContent = CONFIG.PDF_FILENAME;
+
+      this.dom.form.addEventListener('submit', (e) => this.handleSearch(e));
+
+      this.setupPDFWorker();
+      this.loadPdf();
+    }
+
+    getTodayISO() {
+      const d = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+
+    isoToItDate(iso) {
+      if (!iso) return '';
+      const [y, mo, da] = iso.split('-');
+      return `${da}/${mo}/${y}`;
+    }
+
+    setupPDFWorker() {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = CONFIG.WORKER_SRC;
+    }
+
+    async loadPdf() {
+      try {
+        const loadingTask = pdfjsLib.getDocument(CONFIG.PDF_FILENAME);
+        const pdf = await loadingTask.promise;
+        let fullText = "";
+        
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const pageText = content.items.map(it => it.str).join(" ");
+          fullText += " " + pageText;
+        }
+
+        this.parseRecords(fullText);
+        this.unlockUI();
+
+      } catch (err) {
+        console.error("Errore lettura PDF:", err);
+        this.showError(`Errore di sistema: Impossibile leggere il file ${CONFIG.PDF_FILENAME}.`);
+        this.dom.statusText.textContent = "Errore PDF";
+        this.dom.statusDot.className = 'dot';
+        this.dom.statusDot.style.background = 'var(--red-apple)';
+        this.dom.statusDot.style.boxShadow = '0 0 8px var(--red-apple)';
+      }
+    }
+
+    parseRecords(rawText) {
+      const flat = rawText.replace(/\s+/g, " ");
+      
+      const re = /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+(\d{6,7})\s+(R-[A-Za-z0-9]+)\s+(\d{2}:\d{2})\s+(\d{2}:\d{2})/g;
+      let m;
+      this.records = [];
+      
+      while ((m = re.exec(flat)) !== null) {
+        this.records.push({
+          date: m[1],
+          hotel: m[2].trim(),
+          idpos: m[3],
+          treno: m[4],
+          in: m[5],
+          out: m[6]
+        });
+      }
+    }
+
+    unlockUI() {
+      this.isReady = true;
+      this.dom.statusText.innerHTML = `<b>${this.records.length}</b> record caricati`;
+      this.dom.statusDot.classList.remove('loading');
+      
+      this.dom.trainInput.disabled = false;
+      this.dom.dateInput.disabled = false;
+      this.dom.searchBtn.disabled = false;
+    }
+
+    extractTrainNumber(trenoStr) {
+      const m = trenoStr.match(/(\d+)$/);
+      return m ? m[1] : "";
+    }
+
+    hideAlertsAndResults() {
+      this.dom.alertBox.className = 'alert-box';
+      this.dom.resultCard.classList.remove('show');
+    }
+
+    showError(message, type = 'error') {
+      this.hideAlertsAndResults();
+      this.dom.alertBox.textContent = message;
+      this.dom.alertBox.classList.add('show', type);
+    }
+
+    handleSearch(e) {
+      e.preventDefault(); 
+      
+      if (!this.isReady) return;
+
+      this.dom.trainInput.blur();
+      this.dom.dateInput.blur();
+
+      const query = this.dom.trainInput.value.trim();
+      const dateVal = this.dom.dateInput.value;
+
+      if (!query) {
+        this.showError("Inserisci un numero di treno valido.", 'warning');
+        return;
+      }
+      if (!dateVal) {
+        this.showError("Seleziona una data per la ricerca.", 'warning');
+        return;
+      }
+
+      const selectedDate = this.isoToItDate(dateVal);
+      
+      const match = this.records.find(r => 
+        r.date === selectedDate && this.extractTrainNumber(r.treno) === query
+      );
+
+      this.hideAlertsAndResults();
+
+      if (match) {
+        this.dom.valIdPos.textContent = match.idpos;
+        this.dom.valDate.textContent = match.date;
+        this.dom.valHotel.textContent = match.hotel;
+        this.dom.valTreno.textContent = match.treno;
+        this.dom.valIn.textContent = match.in;
+        this.dom.valOut.textContent = match.out;
+        
+        this.dom.resultCard.classList.add('show');
+      } else {
+        this.showError(`Treno ${query} non trovato in data ${selectedDate}.`, 'warning');
+      }
+    }
+  }
+
+  new POSApp();
+});
+</script>
+</body>
+</html>
