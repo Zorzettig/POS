@@ -8,8 +8,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Hotel PDC</title>
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/jpeg" href="icona.jpg">
+<link rel="apple-touch-icon" href="icona.jpg">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#f5f5f7">
 
 <!-- Tipografia di Sistema (Stile Apple) -->
@@ -406,6 +407,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   new POSApp();
 });
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(registration => {
+      console.log('ServiceWorker registration successful');
+    }, err => {
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
 </script>
 </body>
 </html>
