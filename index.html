@@ -13,10 +13,10 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#f5f5f7">
 
-<!-- Tipografia di Sistema (Stile Apple) -->
+<!-- Tipografia di Sistema (Stile Apple) & JetBrains Mono per codici/orari -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <!-- PDF.js via CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -24,33 +24,41 @@
 <style>
   :root {
     --bg-system: #f5f5f7;
-    --card-bg: rgba(255, 255, 255, 0.72);
-    --card-border: rgba(255, 255, 255, 0.8);
+    --card-bg: rgba(255, 255, 255, 0.76);
+    --card-border: rgba(255, 255, 255, 0.85);
+    --item-bg: rgba(255, 255, 255, 0.95);
+    --item-border: rgba(0, 0, 0, 0.06);
     --text-primary: #1d1d1f;
     --text-secondary: #86868b;
     --accent: #0071e3;
     --accent-hover: #0077ed;
     --accent-disabled: #a1c6ea;
     --green-apple: #34c759;
+    --green-bg: rgba(52, 199, 89, 0.12);
     --red-apple: #ff3b30;
     --separator: rgba(60, 60, 67, 0.12);
-    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-soft: 0 12px 36px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.03);
+    --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.04);
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
       --bg-system: #000000;
-      --card-bg: rgba(28, 28, 30, 0.75);
-      --card-border: rgba(255, 255, 255, 0.12);
+      --card-bg: rgba(28, 28, 30, 0.78);
+      --card-border: rgba(255, 255, 255, 0.14);
+      --item-bg: rgba(44, 44, 46, 0.85);
+      --item-border: rgba(255, 255, 255, 0.08);
       --text-primary: #f5f5f7;
-      --text-secondary: #86868b;
+      --text-secondary: #8e8e93;
       --accent: #2997ff;
       --accent-hover: #3ca0ff;
       --accent-disabled: #1d4066;
       --green-apple: #30d158;
+      --green-bg: rgba(48, 209, 88, 0.16);
       --red-apple: #ff453a;
       --separator: rgba(84, 84, 88, 0.35);
-      --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.3);
+      --shadow-soft: 0 12px 36px rgba(0, 0, 0, 0.35);
+      --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
   }
 
@@ -64,7 +72,7 @@
   html, body {
     margin: 0; padding: 0;
     background-color: var(--bg-system);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--text-primary);
     min-height: 100vh; display: flex; justify-content: center;
     overscroll-behavior-y: none;
@@ -77,20 +85,20 @@
 
   /* --- HEADER --- */
   header.top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 0 4px; }
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .brand-mark {
-    width: 40px; height: 40px; border-radius: 10px;
-    background: linear-gradient(135deg, #0071e3, #42a5f5);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3); flex-shrink: 0;
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-logo {
+    width: 44px; height: 44px; border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+    border: 1px solid var(--separator);
   }
-  .brand h1 { font-size: 20px; margin: 0; font-weight: 600; letter-spacing: -0.4px; }
-  .brand .sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .brand h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -0.4px; }
+  .brand .sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
-  /* --- CARD CONTENITORE --- */
+  /* --- CARD PRINCIPALE --- */
   .sheet {
-    background: var(--card-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    background: var(--card-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
     border-radius: 24px; border: 1px solid var(--card-border);
     box-shadow: var(--shadow-soft); overflow: hidden;
   }
@@ -106,9 +114,9 @@
   }
   .meta-container .meta { font-size: 12px; color: var(--text-primary); font-weight: 500; }
   
-  /* PALLINO DI STATO (Spostato nella card) */
+  /* PALLINO DI STATO */
   .dot {
-    width: 7px; height: 7px; border-radius: 50%;
+    width: 8px; height: 8px; border-radius: 50%;
     background: var(--green-apple); box-shadow: 0 0 8px var(--green-apple);
     transition: background 0.3s ease, box-shadow 0.3s ease;
   }
@@ -116,47 +124,114 @@
   @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
 
   form { padding: 20px; }
-  .row { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 480px) {
+    .row { grid-template-columns: 1fr; }
+  }
   .field { display: flex; flex-direction: column; }
   .field label { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; margin-left: 2px; }
   
   .field input {
     width: 100%; height: 50px; padding: 0 16px; border: 1px solid var(--separator);
-    border-radius: 14px; background: rgba(255, 255, 255, 0.5); font-family: inherit; font-size: 16px;
+    border-radius: 14px; background: rgba(255, 255, 255, 0.6); font-family: inherit; font-size: 16px;
     color: var(--text-primary); outline: none; transition: all 0.2s ease;
   }
-  @media (prefers-color-scheme: dark) { .field input { background: rgba(0, 0, 0, 0.2); } }
+  @media (prefers-color-scheme: dark) { .field input { background: rgba(0, 0, 0, 0.25); } }
   
-  .field input[type=text] { font-family: 'JetBrains Mono', monospace, sans-serif; font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
-  .field input:focus:not(:disabled) { border-color: var(--accent); background: rgba(255, 255, 255, 0.9); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15); }
+  .field input[type=text] { font-family: 'JetBrains Mono', monospace, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.5px; }
+  .field input:focus:not(:disabled) { border-color: var(--accent); background: rgba(255, 255, 255, 0.95); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15); }
   @media (prefers-color-scheme: dark) { .field input:focus:not(:disabled) { background: rgba(0, 0, 0, 0.5); } }
   .field input:disabled { opacity: 0.6; cursor: not-allowed; background: rgba(0,0,0,0.05); }
   .field.required label::after { content: " *"; color: var(--red-apple); }
 
-  .actions { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+  .actions { margin-top: 20px; display: flex; gap: 10px; }
   
   button {
-    width: 100%; height: 52px; font-family: inherit; font-size: 17px; font-weight: 600; letter-spacing: -0.2px;
+    width: 100%; height: 50px; font-family: inherit; font-size: 16px; font-weight: 600; letter-spacing: -0.2px;
     border: none; border-radius: 14px; padding: 0 20px; cursor: pointer; transition: all 0.2s ease;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .btn-primary { background: var(--accent); color: #ffffff; box-shadow: 0 4px 14px rgba(0, 113, 227, 0.3); }
-  .btn-primary:active:not(:disabled) { transform: scale(0.97); background: var(--accent-hover); }
-  .btn-primary:disabled { background: var(--accent-disabled); box-shadow: none; cursor: not-allowed; opacity: 0.8; }
+  .btn-primary { background: var(--accent); color: #ffffff; box-shadow: 0 4px 14px rgba(0, 113, 227, 0.28); }
+  .btn-primary:active:not(:disabled) { transform: scale(0.98); background: var(--accent-hover); }
+  .btn-primary:disabled { background: var(--accent-disabled); box-shadow: none; cursor: not-allowed; opacity: 0.75; }
+
+  .btn-reset {
+    width: auto; padding: 0 16px; background: rgba(120, 120, 128, 0.12); color: var(--text-primary);
+    border: 1px solid var(--separator);
+  }
+  .btn-reset:hover { background: rgba(120, 120, 128, 0.2); }
 
   /* --- RISULTATI --- */
-  .result { background: rgba(255, 255, 255, 0.85); border-top: 1px solid var(--separator); padding: 24px 20px; display: none; animation: fadeIn 0.3s ease; }
-  @media (prefers-color-scheme: dark) { .result { background: rgba(40, 40, 42, 0.85); } }
-  .result.show { display: block; }
-  .result-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--green-apple); margin-bottom: 6px; }
-  .result .idpos { font-size: 44px; font-weight: 700; color: var(--text-primary); letter-spacing: -1.5px; font-family: 'JetBrains Mono', monospace; margin-bottom: 24px; }
-  
-  .result .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: rgba(0,0,0,0.03); padding: 16px; border-radius: 14px; }
-  @media (prefers-color-scheme: dark) { .result .grid { background: rgba(255, 255, 255, 0.04); } }
-  .result .grid div { display: flex; flex-direction: column; }
-  .result .grid span { color: var(--text-secondary); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-  .result .grid b { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .results-wrapper {
+    border-top: 1px solid var(--separator);
+    padding: 20px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .results-wrapper.show { display: block; }
 
-  /* --- ERRORI / NESSUN RISULTATO --- */
+  .results-header-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .results-count-badge {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--green-apple); background: var(--green-bg);
+    padding: 4px 10px; border-radius: 20px;
+  }
+
+  .results-list {
+    display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .result-card {
+    background: var(--item-bg);
+    border: 1px solid var(--item-border);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .result-card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 14px;
+  }
+
+  .idpos-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 2px;
+  }
+  .idpos-value {
+    font-size: 36px; font-weight: 700; color: var(--text-primary);
+    letter-spacing: -1px; font-family: 'JetBrains Mono', monospace;
+    line-height: 1.1;
+  }
+
+  .btn-copy {
+    width: auto; height: 34px; font-size: 12px; font-weight: 600;
+    padding: 0 12px; border-radius: 10px;
+    background: rgba(0, 113, 227, 0.1); color: var(--accent);
+    border: 1px solid rgba(0, 113, 227, 0.2);
+    transition: all 0.2s ease;
+  }
+  .btn-copy:hover { background: rgba(0, 113, 227, 0.18); }
+  .btn-copy.copied {
+    background: var(--green-bg); color: var(--green-apple);
+    border-color: rgba(52, 199, 89, 0.3);
+  }
+
+  .card-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+    background: rgba(120, 120, 128, 0.06); padding: 12px 14px; border-radius: 12px;
+  }
+  .card-grid .full-span { grid-column: span 2; }
+  .card-grid div { display: flex; flex-direction: column; }
+  .card-grid span { color: var(--text-secondary); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .card-grid b { font-size: 14px; font-weight: 600; color: var(--text-primary); word-break: break-word; }
+  .card-grid b.mono { font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+
+  /* --- ERRORI / AVVISI --- */
   .alert-box {
     margin: 0 20px 20px; border-radius: 14px; padding: 16px;
     font-size: 14px; font-weight: 500; display: none; text-align: center; animation: fadeIn 0.3s ease; line-height: 1.4;
@@ -179,10 +254,10 @@
 
   <header class="top">
     <div class="brand">
-      <div class="brand-mark">POS</div>
+      <img src="icona.jpg" alt="Logo POS" class="brand-logo">
       <div>
         <h1>Hotel PDC</h1>
-        <div class="sub">Ricerca su database</div>
+        <div class="sub">Ricerca su database prenotazioni</div>
       </div>
     </div>
   </header>
@@ -192,15 +267,15 @@
       <div class="label">Registro prenotazioni</div>
       <div class="meta-container">
         <span class="dot loading" id="statusDot"></span>
-        <span class="meta" id="status" aria-live="polite">Analisi in corso...</span>
+        <span class="meta" id="status" aria-live="polite">Caricamento PDF...</span>
       </div>
     </div>
 
     <form id="searchForm" autocomplete="off">
       <div class="row">
         <div class="field required">
-          <label for="trainInput">N. Treno</label>
-          <input id="trainInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Es. 3629" disabled>
+          <label for="trainInput">N. Treno / Sigla</label>
+          <input id="trainInput" type="text" placeholder="Es. 3629 o WT3629" autocapitalize="characters" autocorrect="off" spellcheck="false" disabled>
         </div>
         <div class="field required">
           <label for="dateInput">Data</label>
@@ -210,25 +285,21 @@
 
       <div class="actions">
         <button type="submit" class="btn-primary" id="searchBtn" disabled>Cerca ID POS</button>
+        <button type="button" class="btn-reset" id="resetBtn" title="Reimposta campi" style="display:none;">✕</button>
       </div>
     </form>
 
     <div class="alert-box error" id="alertBox" aria-live="assertive"></div>
 
-    <div class="result" id="resultCard" aria-live="polite">
-      <div class="result-header">ID POS Trovato</div>
-      <div class="idpos" id="idposValue">—</div>
-      <div class="grid">
-        <div><span>Data</span><b id="rDate">—</b></div>
-        <div><span>Hotel</span><b id="rHotel">—</b></div>
-        <div><span>Treno</span><b id="rTreno">—</b></div>
-        <div><span>Ora in</span><b id="rIn">—</b></div>
-        <div><span>Ora out</span><b id="rOut">—</b></div>
+    <div class="results-wrapper" id="resultsWrapper" aria-live="polite">
+      <div class="results-header-bar">
+        <span class="results-count-badge" id="resultsCountBadge">0 Risultati</span>
       </div>
+      <div class="results-list" id="resultsList"></div>
     </div>
   </div>
 
-  <footer class="foot">File in uso: <code id="pdfName">—</code></footer>
+  <footer class="foot">File database: <code id="pdfName">—</code></footer>
 </div>
 
 <script>
@@ -242,6 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
   class POSApp {
     constructor() {
       this.records = [];
+      this.uniqueDates = [];
       this.isReady = false;
       
       this.dom = {
@@ -251,25 +323,22 @@ document.addEventListener('DOMContentLoaded', () => {
         trainInput: document.getElementById('trainInput'),
         dateInput: document.getElementById('dateInput'),
         searchBtn: document.getElementById('searchBtn'),
+        resetBtn: document.getElementById('resetBtn'),
         alertBox: document.getElementById('alertBox'),
-        resultCard: document.getElementById('resultCard'),
-        pdfName: document.getElementById('pdfName'),
-        valIdPos: document.getElementById('idposValue'),
-        valDate: document.getElementById('rDate'),
-        valHotel: document.getElementById('rHotel'),
-        valTreno: document.getElementById('rTreno'),
-        valIn: document.getElementById('rIn'),
-        valOut: document.getElementById('rOut')
+        resultsWrapper: document.getElementById('resultsWrapper'),
+        resultsCountBadge: document.getElementById('resultsCountBadge'),
+        resultsList: document.getElementById('resultsList'),
+        pdfName: document.getElementById('pdfName')
       };
 
       this.init();
     }
 
     init() {
-      this.dom.dateInput.value = this.getTodayISO();
       this.dom.pdfName.textContent = CONFIG.PDF_FILENAME;
 
       this.dom.form.addEventListener('submit', (e) => this.handleSearch(e));
+      this.dom.resetBtn.addEventListener('click', () => this.handleReset());
 
       this.setupPDFWorker();
       this.loadPdf();
@@ -283,12 +352,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     isoToItDate(iso) {
       if (!iso) return '';
-      const [y, mo, da] = iso.split('-');
-      return `${da}/${mo}/${y}`;
+      const parts = iso.split('-');
+      if (parts.length !== 3) return '';
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    itToIsoDate(itDate) {
+      if (!itDate) return '';
+      const parts = itDate.split('/');
+      if (parts.length !== 3) return '';
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
 
     setupPDFWorker() {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = CONFIG.WORKER_SRC;
+      if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = CONFIG.WORKER_SRC;
+      }
     }
 
     async loadPdf() {
@@ -320,20 +399,32 @@ document.addEventListener('DOMContentLoaded', () => {
     parseRecords(rawText) {
       const flat = rawText.replace(/\s+/g, " ");
       
-      const re = /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+(\d{6,7})\s+(R-[A-Za-z0-9]+)\s+(\d{2}:\d{2})\s+(\d{2}:\d{2})/g;
+      // Regex migliorato per catturare date, hotel, ID POS (6-7 cifre), sigla treno, ora in e ora out
+      const re = /(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+(\d{6,7})\s+([A-Za-z0-9\-]+)\s+(\d{2}:\d{2})\s+(\d{2}:\d{2})/g;
       let m;
       this.records = [];
+      const datesSet = new Set();
       
       while ((m = re.exec(flat)) !== null) {
+        const recordDate = m[1];
+        datesSet.add(recordDate);
         this.records.push({
-          date: m[1],
+          date: recordDate,
           hotel: m[2].trim(),
           idpos: m[3],
-          treno: m[4],
+          treno: m[4].trim(),
           in: m[5],
           out: m[6]
         });
       }
+
+      // Ordina le date disponibili
+      const dateList = Array.from(datesSet).map(d => ({
+        it: d,
+        iso: this.itToIsoDate(d)
+      })).filter(d => d.iso).sort((a, b) => a.iso.localeCompare(b.iso));
+
+      this.uniqueDates = dateList;
     }
 
     unlockUI() {
@@ -344,22 +435,176 @@ document.addEventListener('DOMContentLoaded', () => {
       this.dom.trainInput.disabled = false;
       this.dom.dateInput.disabled = false;
       this.dom.searchBtn.disabled = false;
+      this.dom.resetBtn.style.display = 'inline-flex';
+
+      // Imposta min, max e valore iniziale della data in modo intelligente
+      if (this.uniqueDates.length > 0) {
+        const minIso = this.uniqueDates[0].iso;
+        const maxIso = this.uniqueDates[this.uniqueDates.length - 1].iso;
+        this.dom.dateInput.min = minIso;
+        this.dom.dateInput.max = maxIso;
+
+        const todayIso = this.getTodayISO();
+        const hasToday = this.uniqueDates.some(d => d.iso === todayIso);
+        
+        // Se la data odierna rientra nel DB usa oggi, altrimenti la prima data del file
+        this.dom.dateInput.value = hasToday ? todayIso : minIso;
+      } else {
+        this.dom.dateInput.value = this.getTodayISO();
+      }
     }
 
-    extractTrainNumber(trenoStr) {
-      const m = trenoStr.match(/(\d+)$/);
-      return m ? m[1] : "";
+    extractDigits(str) {
+      if (!str) return "";
+      const m = str.match(/\d+/g);
+      return m ? m.join('') : "";
+    }
+
+    normalizeCode(str) {
+      if (!str) return "";
+      return str.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    }
+
+    isTrainMatch(trenoStr, query) {
+      if (!trenoStr || !query) return false;
+      
+      const queryTrimmed = query.trim().toUpperCase();
+      const queryDigits = this.extractDigits(queryTrimmed);
+      const trainDigits = this.extractDigits(trenoStr);
+
+      // 1. Corrispondenza esatta di sole cifre (es. '3629' matcha 'R-WT3629' o 'R-3629')
+      if (queryDigits && trainDigits && queryDigits === trainDigits) {
+        return true;
+      }
+
+      // 2. Corrispondenza alfanumerica normalizzata (es. 'WT3629' matcha 'R-WT3629')
+      const normQuery = this.normalizeCode(queryTrimmed);
+      const normTrain = this.normalizeCode(trenoStr);
+      if (normQuery && normTrain && (normTrain === normQuery || normTrain.endsWith(normQuery))) {
+        return true;
+      }
+
+      // 3. Inclusione semplice case-insensitive
+      if (trenoStr.toUpperCase().includes(queryTrimmed)) {
+        return true;
+      }
+
+      return false;
     }
 
     hideAlertsAndResults() {
       this.dom.alertBox.className = 'alert-box';
-      this.dom.resultCard.classList.remove('show');
+      this.dom.resultsWrapper.classList.remove('show');
+      this.dom.resultsList.innerHTML = '';
     }
 
     showError(message, type = 'error') {
       this.hideAlertsAndResults();
       this.dom.alertBox.textContent = message;
       this.dom.alertBox.classList.add('show', type);
+    }
+
+    handleReset() {
+      this.dom.trainInput.value = '';
+      if (this.uniqueDates.length > 0) {
+        const todayIso = this.getTodayISO();
+        const hasToday = this.uniqueDates.some(d => d.iso === todayIso);
+        this.dom.dateInput.value = hasToday ? todayIso : this.uniqueDates[0].iso;
+      }
+      this.hideAlertsAndResults();
+      this.dom.trainInput.focus();
+    }
+
+    copyToClipboard(text, btnElement) {
+      if (!text) return;
+      
+      const onSuccess = () => {
+        const originalText = btnElement.textContent;
+        btnElement.textContent = "Copiato! ✓";
+        btnElement.classList.add('copied');
+        setTimeout(() => {
+          btnElement.textContent = originalText;
+          btnElement.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+          this.fallbackCopyText(text, onSuccess);
+        });
+      } else {
+        this.fallbackCopyText(text, onSuccess);
+      }
+    }
+
+    fallbackCopyText(text, callback) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        if (callback) callback();
+      } catch (err) {
+        console.error('Fallback copy fallito', err);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    renderResults(matches, query, dateStr) {
+      this.dom.resultsList.innerHTML = '';
+      
+      const count = matches.length;
+      this.dom.resultsCountBadge.textContent = count === 1 ? '1 Prenotazione trovata' : `${count} Prenotazioni trovate`;
+
+      matches.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.style.animationDelay = `${index * 0.05}s`;
+
+        card.innerHTML = `
+          <div class="result-card-top">
+            <div>
+              <div class="idpos-label">ID POS</div>
+              <div class="idpos-value">${item.idpos}</div>
+            </div>
+            <button type="button" class="btn-copy" data-pos="${item.idpos}">Copia ID</button>
+          </div>
+          <div class="card-grid">
+            <div class="full-span">
+              <span>Hotel</span>
+              <b>${item.hotel}</b>
+            </div>
+            <div>
+              <span>Treno</span>
+              <b class="mono">${item.treno}</b>
+            </div>
+            <div>
+              <span>Data</span>
+              <b>${item.date}</b>
+            </div>
+            <div>
+              <span>Ora Ingresso</span>
+              <b class="mono">${item.in}</b>
+            </div>
+            <div>
+              <span>Ora Uscita</span>
+              <b class="mono">${item.out}</b>
+            </div>
+          </div>
+        `;
+
+        const copyBtn = card.querySelector('.btn-copy');
+        copyBtn.addEventListener('click', () => this.copyToClipboard(item.idpos, copyBtn));
+
+        this.dom.resultsList.appendChild(card);
+      });
+
+      this.dom.resultsWrapper.classList.add('show');
     }
 
     handleSearch(e) {
@@ -374,7 +619,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const dateVal = this.dom.dateInput.value;
 
       if (!query) {
-        this.showError("Inserisci un numero di treno valido.", 'warning');
+        this.showError("Inserisci un numero o sigla di treno valido.", 'warning');
         return;
       }
       if (!dateVal) {
@@ -384,23 +629,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const selectedDate = this.isoToItDate(dateVal);
       
-      const match = this.records.find(r => 
-        r.date === selectedDate && this.extractTrainNumber(r.treno) === query
+      // Filtra TUTTE le corrispondenze per quella data e treno
+      const matches = this.records.filter(r => 
+        r.date === selectedDate && this.isTrainMatch(r.treno, query)
       );
 
       this.hideAlertsAndResults();
 
-      if (match) {
-        this.dom.valIdPos.textContent = match.idpos;
-        this.dom.valDate.textContent = match.date;
-        this.dom.valHotel.textContent = match.hotel;
-        this.dom.valTreno.textContent = match.treno;
-        this.dom.valIn.textContent = match.in;
-        this.dom.valOut.textContent = match.out;
-        
-        this.dom.resultCard.classList.add('show');
+      if (matches.length > 0) {
+        this.renderResults(matches, query, selectedDate);
       } else {
-        this.showError(`Treno ${query} non trovato in data ${selectedDate}.`, 'warning');
+        this.showError(`Nessun risultato trovato per il treno "${query}" in data ${selectedDate}.`, 'warning');
       }
     }
   }
@@ -411,9 +650,9 @@ document.addEventListener('DOMContentLoaded', () => {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').then(registration => {
-      console.log('ServiceWorker registration successful');
-    }, err => {
-      console.log('ServiceWorker registration failed: ', err);
+      console.log('ServiceWorker registrato con successo');
+    }).catch(err => {
+      console.log('Registrazione ServiceWorker fallita:', err);
     });
   });
 }
